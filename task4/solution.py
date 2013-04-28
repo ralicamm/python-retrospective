@@ -32,10 +32,11 @@ class TicTacToeBoard:
             '    A   B   C  \n'
 
     def __setitem__(self, index_string, value):
-        if not re.match(r'^[ABC][123]$', index_string):
+        if type(index_string) is not str or not re.match(r'^[ABC][123]$',
+                                                         index_string):
             raise InvalidKey('Invalid key.')
 
-        elif not re.match(r'^[XO]$', value):
+        elif type(value) is not str or not re.match(r'^[XO]$', value):
             raise InvalidValue('Invalid value. Valid values are X and O.')
 
         index = self.string_into_digits(index_string)
@@ -107,15 +108,15 @@ class TicTacToeBoard:
         return True
 
     def __str__(self):
-        self.print_board = '\n  -------------\n' +\
-            '3 | {} | {} | {} |\n'.format(self.board[0][2], self.board[1][2],
-                                          self.board[2][2]) +\
-            '  -------------\n' +\
-            '2 | {} | {} | {} |\n'.format(self.board[0][1], self.board[1][1],
-                                          self.board[2][1]) +\
-            '  -------------\n' +\
-            '1 | {} | {} | {} |\n'.format(self.board[0][0], self.board[1][0],
-                                          self.board[2][0]) +\
-            '  -------------\n' +\
-            '    A   B   C  \n'
+        self.print_board = (
+            '\n  -------------\n' +
+            '3 | {} | {} | {} |\n' +
+            '  -------------\n' +
+            '2 | {} | {} | {} |\n' +
+            '  -------------\n' +
+            '1 | {} | {} | {} |\n' +
+            '  -------------\n' +
+            '    A   B   C  \n').format(*[self.board[j][i] for i in
+                                          range(2, -1, -1) for j in
+                                          range(0, 3)])
         return self.print_board

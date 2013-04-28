@@ -1,3 +1,6 @@
+from collections import OrderedDict
+
+
 def groupby(func, seq):
     dictionary = {}
     items = [(func(x), x) for x in seq]
@@ -21,27 +24,27 @@ def iterate(func):
 
 
 def zip_with(func, *iterables):
-    for i in range(0, len(iterables)):
-        args = []
-        for iterable in iterables:
-            if i == len(iterable):
-                return
-            args.append(iterable[i])
+    if len(iterables) == 0:
+        return
+    iterators = [iter(i) for i in iterables]
+
+    while True:
+        args = [next(it) for it in iterators]
+        if len(iterables) != len(args):
+            return
         yield func(*args)
-        i += 1
 
 
 def cache(func, cache_size):
-    cached_items = []
+    if cache_size <= 0:
+        return func
+    cached_items = OrderedDict()
 
-    def func_cached(x):
-        result = [func_result for (arg, func_result) in cached_items
-                  if arg == x]
-        if [] != result:
-            return result[0]
-        result = func(x)
-        if len(cached_items) == cache_size:
-            cached_items.remove(cached_items[0])
-        cached_items.append((x, result))
-        return result
+    def func_cached(*args):
+        if args not in cached_items:
+            result = func(*args)
+            if len(cached_items) == cache_size:
+                cached_items.popitem(False)
+            cached_items[args] = result
+        return cached_items[args]
     return func_cached
